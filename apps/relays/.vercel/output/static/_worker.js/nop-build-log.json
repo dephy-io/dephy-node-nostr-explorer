@@ -1,0 +1,36 @@
+{
+  "timestamp": 1740117577597,
+  "outputDir": ".vercel/output/static/_worker.js",
+  "versions": {
+    "@cloudflare/next-on-pages": "1.13.8"
+  },
+  "buildFiles": {
+    "functions": {
+      "invalid": [],
+      "middleware": [],
+      "edge": [],
+      "prerendered": [],
+      "ignored": []
+    },
+    "staticAssets": [
+      "/404.html",
+      "/500.html",
+      "/_next/static/chunks/framework-6618fcfaf8cc4c2e.js",
+      "/_next/static/chunks/main-108996236eb53600.js",
+      "/_next/static/chunks/pages/_app-0e1046e9c6351cc6.js",
+      "/_next/static/chunks/pages/_error-e2b1353582edc9c0.js",
+      "/_next/static/chunks/pages/index-d97bcab7a139500a.js",
+      "/_next/static/chunks/polyfills-c67a75d1b6f99dc8.js",
+      "/_next/static/chunks/webpack-36d12a75f0098f30.js",
+      "/_next/static/lc6xYd--9ErnhCCmwiN8A/_buildManifest.js",
+      "/_next/static/lc6xYd--9ErnhCCmwiN8A/_ssgManifest.js",
+      "/favicon.ico",
+      "/index.html"
+    ],
+    "identifiers": {
+      "wasm": {},
+      "manifest": {},
+      "webpack": {}
+    }
+  }
+}
