@@ -9,7 +9,7 @@ import SearchFeed from "./search-feed";
 
 import { useRelayMetadata } from "../hooks/useRelayMetadata";
 
-export default function Relay({ url }: { url: string }) {
+export default function Relay({ url, kinds }: { url: string, kinds: number[] }) {
   const { isError, isFetched, data } = useRelayMetadata(url);
   const supportsSearch = data?.supported_nips.includes(50);
   return (
@@ -40,7 +40,7 @@ export default function Relay({ url }: { url: string }) {
       {supportsSearch ? (
         <SearchFeed searchRelays={[url]} relays={[url]} />
       ) : (
-        <RelaysFeed relays={[url]} />
+        <RelaysFeed relay={url} kinds={kinds} />
       )}
     </Stack>
   );

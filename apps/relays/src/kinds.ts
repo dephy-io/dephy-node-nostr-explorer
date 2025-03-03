@@ -4,10 +4,10 @@ import RelayList from "./components/relay-list";
 import RelaySet from "./components/relay-set";
 
 export const kinds = [
-  // NDKKind.Text,
-  // NDKKind.Article,
-  // NDKKind.RelayList,
-  // NDKKind.RelaySet,
+  NDKKind.Text,
+  NDKKind.Article,
+  NDKKind.RelayList,
+  NDKKind.RelaySet,
   1573
 ];
 

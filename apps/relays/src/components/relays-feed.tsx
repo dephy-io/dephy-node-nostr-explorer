@@ -2,8 +2,11 @@
 
 import { Feed } from "@ngine/core";
 
-import { kinds, components } from "../kinds";
+import { components } from "../kinds";
+import NDK, { NDKKind } from "@nostr-dev-kit/ndk";
 
-export default function RelaysFeed({ relays }: { relays: string[] }) {
-  return <Feed filter={{ kinds }} relays={relays} components={components} />;
+ 
+
+export default function RelaysFeed({ relay, kinds }: { relay: string, kinds: NDKKind[] }) {
+  return <Feed filter={{ kinds }} relays={[relay]} components={components} />;
 }

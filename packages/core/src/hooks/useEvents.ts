@@ -46,6 +46,7 @@ export default function useEvents(
       sub.on("eose", () => {
         setEose(true);
       });
+      
       return () => {
         sub.stop();
       };
