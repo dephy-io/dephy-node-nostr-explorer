@@ -13,8 +13,9 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  HStack,
 } from "@chakra-ui/react";
-import NDK, { NDKRelaySet } from "@nostr-dev-kit/ndk";
+import NDK, { NDKEvent, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { useIntl, FormattedMessage } from "react-intl";
 import { useNDK, useRelays } from "@ngine/core";
 import { useQuery } from "@tanstack/react-query";
@@ -43,13 +44,17 @@ async function fetchRelays(ndk: NDK) {
 export default function Relays() {
   const { formatMessage } = useIntl();
   const router = useRouter();
-  const [relay, setRelay] = useState("");
+  const [relay, setRelay] = useState("relay-for-demo.dephy.dev ");
+  const [kinds, setKinds] = useState('1573')
   const myRelays = useRelays();
   const ndk = useNDK();
-  const { data: events, isError } = useQuery({
-    queryKey: ["relays"],
-    queryFn: () => fetchRelays(ndk),
-  });
+  // const { data: events, isError } = useQuery({
+  //   queryKey: ["relays"],
+  //   queryFn: () => fetchRelays(ndk),
+  // });
+  const events: NDKEvent[] = []
+  const isError = false
+
   const relayUrls = useMemo(() => {
     return (events ?? [])
       .map((e) => e.tagValue("d"))
@@ -72,12 +77,12 @@ export default function Relays() {
   }, [relay, relayUrls, myRelays]);
 
   function goToRelay(url: string) {
-    router.push(`/relay/${encodeRelayURL(url)}`);
+    router.push(`/relay/${encodeRelayURL(url)}?kinds=${kinds}`);
   }
 
   return (
-    <Stack spacing={4} w="100%">
-      <InputGroup>
+    <HStack spacing={4} w="100%">
+      <InputGroup flex="2">
         <InputLeftElement
           pointerEvents="none"
           children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
@@ -97,24 +102,33 @@ export default function Relays() {
           value={relay}
           onChange={(ev) => setRelay(ev.target.value)}
         />
-        <InputRightElement width="4.5rem">
-          <Button
-            h="1.75rem"
-            size="sm"
-            isDisabled={relay.trim().length === 0}
-            onClick={() => goToRelay(relay)}
-            variant="solid"
-            colorScheme="brand"
-          >
-            <FormattedMessage
-              id="go"
-              description="Go to relay button"
-              defaultMessage="Go"
-            />
-          </Button>
-        </InputRightElement>
       </InputGroup>
-      <Stack>
+      <InputGroup flex="1">
+        <InputLeftElement
+          pointerEvents="none"
+          children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
+        />
+        <Input
+          value={kinds}
+          placeholder="Kinds"
+          onChange={(ev) => setKinds(ev.target.value)}
+        />
+      </InputGroup>
+      <Button
+        h="1.75rem"
+        size="sm"
+        isDisabled={relay.trim().length === 0 && kinds.trim().length === 0} 
+        onClick={() => goToRelay(relay)}
+        variant="solid"
+        colorScheme="brand"
+      >
+        <FormattedMessage
+          id="go"
+          description="Go to relay button"
+          defaultMessage="Go"
+        />
+      </Button>
+      {/* <Stack>
         {isError && (
           <Alert>
             <AlertIcon />
@@ -138,7 +152,7 @@ export default function Relays() {
             />
           </Text>
         )}
-      </Stack>
-    </Stack>
+      </Stack> */}
+    </HStack>
   );
 }
