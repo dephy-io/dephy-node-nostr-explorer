@@ -46,9 +46,7 @@ export default function useEvents(
       sub.on("eose", () => {
         setEose(true);
       });
-      sub.on('error', (err) => {
-        console.error('Error in subscription', err);
-      })
+      
       return () => {
         sub.stop();
       };
