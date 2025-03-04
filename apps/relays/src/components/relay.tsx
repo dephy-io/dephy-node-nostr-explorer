@@ -26,7 +26,7 @@ export default function Relay({ url, kinds }: { url: string, kinds: number[] }) 
       ) : isFetched && data ? (
         <RelayMetadata url={url} metadata={data} />
       ) : !isFetched ? (
-        <Skeleton height="42px" />
+        <Skeleton height="42px" marginBottom="20px" />
       ) : (
         <Alert status="error">
           <AlertIcon />

@@ -1,158 +1,84 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
-  Alert,
-  AlertIcon,
   Stack,
   Button,
-  Text,
   Icon,
   Input,
   InputGroup,
   InputLeftElement,
-  InputRightElement,
   HStack,
 } from "@chakra-ui/react";
-import NDK, { NDKEvent, NDKRelaySet } from "@nostr-dev-kit/ndk";
 import { useIntl, FormattedMessage } from "react-intl";
-import { useNDK, useRelays } from "@ngine/core";
-import { useQuery } from "@tanstack/react-query";
 
-import RelayLink from "./relay-link";
 import RelayIcon from "./relay-icon";
-import { encodeRelayURL } from "../utils";
-import { NOSTR_WATCH_MONITOR, RELAY_METADATA } from "src/ui/const";
+import Relay from "./relay";
 
-async function fetchRelays(ndk: NDK) {
-  const events = await ndk.fetchEvents(
-    {
-      authors: [NOSTR_WATCH_MONITOR],
-      kinds: [RELAY_METADATA],
-      since: Math.round(Date.now() / 1000) - 60 * 60 * 24 * 1000,
-    },
-    {
-      closeOnEose: true,
-    },
-    NDKRelaySet.fromRelayUrls(["wss://history.nostr.watch"], ndk),
-  );
-
-  return Array.from(events);
+function normalizeRelayUrl(url: string): string {
+  const cleanUrl = url.replace(/^(wss?|https?|relay):\/\//, '').replace(/\/+$/, '');
+  
+  return `wss://${cleanUrl}`;
 }
 
 export default function Relays() {
   const { formatMessage } = useIntl();
-  const router = useRouter();
-  const [relay, setRelay] = useState("relay-for-demo.dephy.dev ");
-  const [kinds, setKinds] = useState('1573')
-  const myRelays = useRelays();
-  const ndk = useNDK();
-  // const { data: events, isError } = useQuery({
-  //   queryKey: ["relays"],
-  //   queryFn: () => fetchRelays(ndk),
-  // });
-  const events: NDKEvent[] = []
-  const isError = false
+  const [relay, setRelay] = useState("relay-for-demo.dephy.dev");
+  const [kindString, setKindString] = useState('1573')
+  const [url, setUrl] = useState('wss://relay-for-demo.dephy.dev')
+  const [kinds, setKinds] = useState([1573])
 
-  const relayUrls = useMemo(() => {
-    return (events ?? [])
-      .map((e) => e.tagValue("d"))
-      .filter((url) => url)
-      .map((url) => url!.replace(/\/$/, ""));
-  }, [events]);
-
-  function relayScore(url: string) {
-    if (myRelays.includes(url)) {
-      return 1;
-    }
-    return 0;
-  }
-
-  const relays = useMemo(() => {
-    const raw = [...relayUrls].sort((a, b) => relayScore(b) - relayScore(a));
-    return raw
-      .filter((url) => url.toLowerCase().includes(relay.toLowerCase()))
-      .slice(0, 21);
-  }, [relay, relayUrls, myRelays]);
-
-  function goToRelay(url: string) {
-    router.push(`/relay/${encodeRelayURL(url)}?kinds=${kinds}`);
+  function goToRelay() {
+    setUrl(normalizeRelayUrl(relay));
+    setKinds(kindString.split(',').map(Number))
   }
 
   return (
-    <HStack spacing={4} w="100%">
-      <InputGroup flex="2">
-        <InputLeftElement
-          pointerEvents="none"
-          children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
-        />
-        <Input
-          type="text"
-          placeholder={formatMessage({
-            id: "relay-url",
-            description: "Relay URL placeholder",
-            defaultMessage: "Relay URL",
-          })}
-          onKeyPress={(ev) => {
-            if (ev.key === "Enter") {
-              goToRelay(relay);
-            }
-          }}
-          value={relay}
-          onChange={(ev) => setRelay(ev.target.value)}
-        />
-      </InputGroup>
-      <InputGroup flex="1">
-        <InputLeftElement
-          pointerEvents="none"
-          children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
-        />
-        <Input
-          value={kinds}
-          placeholder="Kinds"
-          onChange={(ev) => setKinds(ev.target.value)}
-        />
-      </InputGroup>
-      <Button
-        h="1.75rem"
-        size="sm"
-        isDisabled={relay.trim().length === 0 && kinds.trim().length === 0} 
-        onClick={() => goToRelay(relay)}
-        variant="solid"
-        colorScheme="brand"
-      >
-        <FormattedMessage
-          id="go"
-          description="Go to relay button"
-          defaultMessage="Go"
-        />
-      </Button>
-      {/* <Stack>
-        {isError && (
-          <Alert>
-            <AlertIcon />
-            <FormattedMessage
-              id="cant-fetch-relays"
-              description="Error message shown when can't fetch online relays"
-              defaultMessage="Could not fetch online relays"
-            />
-          </Alert>
-        )}
-        {relays.map((url: string) => (
-          <RelayLink key={url} url={url} />
-        ))}
-        {relays.length === 0 && relay.length > 0 && (
-          <Text color="chakra-subtle-text">
-            <FormattedMessage
-              id="no-relays-found"
-              description="Message shown when no known relay matches the search pattern"
-              defaultMessage="No relays match the term `{ relay }`"
-              values={{ relay }}
-            />
-          </Text>
-        )}
-      </Stack> */}
-    </HStack>
+    <Stack spacing={10}>
+      <HStack spacing={4} w="100%">
+        <InputGroup flex="2">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
+          />
+          <Input
+            type="text"
+            placeholder={formatMessage({
+              id: "relay-url",
+              description: "Relay URL placeholder",
+              defaultMessage: "Relay URL",
+            })}
+            value={relay}
+            onChange={(ev) => setRelay(ev.target.value)}
+          />
+        </InputGroup>
+        <InputGroup flex="1">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
+          />
+          <Input
+            value={kindString}
+            placeholder="Kinds"
+            onChange={(ev) => setKindString(ev.target.value)}
+          />
+        </InputGroup>
+        <Button
+          h="1.75rem"
+          size="sm"
+          isDisabled={relay.trim().length === 0 && kinds.length === 0} 
+          onClick={() => goToRelay()}
+          variant="solid"
+          colorScheme="brand"
+        >
+          <FormattedMessage
+            id="go"
+            description="Go to relay button"
+            defaultMessage="View"
+          />
+        </Button>
+      </HStack>
+      <Relay url={url} kinds={kinds} />
+    </Stack>
   );
 }
