@@ -107,9 +107,9 @@ export default function Feed({
     relays,
   );
 
-  useEffect(() => {
-    setLastShown(undefined);
-  }, [relays])
+  // useEffect(() => {
+  //   setLastShown(undefined);
+  // }, [relays])
 
   const toShow = useMemo(() => {
     // console.log('events', events)

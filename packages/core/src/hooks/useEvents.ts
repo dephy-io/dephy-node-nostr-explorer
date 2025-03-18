@@ -27,10 +27,10 @@ export default function useEvents(
     return hashSha256(filter);
   }, [filter]);
 
-  useEffect(() => {
-    setEvents([]);
-    setEose(false);
-  }, [relays]);
+  // useEffect(() => {
+  //   setEvents([]);
+  //   setEose(false);
+  // }, [relays]);
 
   useEffect(() => {
     if (filter && !opts?.disable) {
@@ -59,7 +59,7 @@ export default function useEvents(
         sub.stop();
       };
     }
-  }, [id, opts?.disable, relays]);
+  }, [id, opts?.disable]);
 
   return { id, eose, events };
 }
