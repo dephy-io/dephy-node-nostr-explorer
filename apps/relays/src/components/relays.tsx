@@ -27,10 +27,12 @@ export default function Relays() {
   const [kindString, setKindString] = useState('1573')
   const [url, setUrl] = useState('wss://relay-for-demo.dephy.dev')
   const [kinds, setKinds] = useState([1573])
+  const [showRelay, setShowRelay] = useState(true)
 
   function goToRelay() {
     setUrl(normalizeRelayUrl(relay));
     setKinds(kindString.split(',').map(Number))
+    setShowRelay(true)
   }
 
   return (
@@ -49,7 +51,7 @@ export default function Relays() {
               defaultMessage: "Relay URL",
             })}
             value={relay}
-            onChange={(ev) => setRelay(ev.target.value)}
+            onChange={(ev) => {setRelay(ev.target.value); setShowRelay(false)}}
           />
         </InputGroup>
         <InputGroup flex="1">
@@ -60,7 +62,7 @@ export default function Relays() {
           <Input
             value={kindString}
             placeholder="Kinds"
-            onChange={(ev) => setKindString(ev.target.value)}
+            onChange={(ev) => { setKindString(ev.target.value); setShowRelay(false) }}
           />
         </InputGroup>
         <Button
@@ -78,7 +80,7 @@ export default function Relays() {
           />
         </Button>
       </HStack>
-      <Relay url={url} kinds={kinds} />
+      { showRelay ? <Relay url={url} kinds={kinds} /> : null }
     </Stack>
   );
 }

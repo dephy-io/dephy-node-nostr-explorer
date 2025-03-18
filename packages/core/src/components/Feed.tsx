@@ -107,13 +107,19 @@ export default function Feed({
     relays,
   );
 
+  // useEffect(() => {
+  //   setLastShown(undefined);
+  // }, [relays])
+
   const toShow = useMemo(() => {
+    // console.log('events', events)
     if (!lastShown) {
       return events;
     }
     const idx = events.findIndex((e) => e.id === lastShown);
     return events.slice(idx, events.length);
   }, [lastShown, events]);
+  // console.log('toShow', toShow)
 
   const hidden = useMemo(() => {
     if (!lastShown) {
@@ -154,7 +160,7 @@ export default function Feed({
             />
           </Button>
         )} */}
-        {toShow.map((e) => (
+        {events.map((e) => (
           <Event key={e.id} event={e} {...props} />
         ))}
         {!hideLoadMore && eose && events.length > 0 && (
