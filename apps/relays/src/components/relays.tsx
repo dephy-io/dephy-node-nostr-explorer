@@ -76,7 +76,7 @@ export default function Relays() {
           <FormattedMessage
             id="go"
             description="Go to relay button"
-            defaultMessage="View"
+            defaultMessage="Refresh"
           />
         </Button>
       </HStack>
