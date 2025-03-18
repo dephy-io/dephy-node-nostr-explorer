@@ -28,21 +28,29 @@ export default function useEvents(
   }, [filter]);
 
   useEffect(() => {
+    setEvents([]);
+    setEose(false);
+  }, [relays]);
+
+  useEffect(() => {
     if (filter && !opts?.disable) {
       const relaySet =
         relays?.length ?? 0 > 0
           ? NDKRelaySet.fromRelayUrls(relays as string[], ndk)
           : undefined;
       const sub = ndk.subscribe(filter, opts, relaySet);
+      // console.log('sub', sub)
       sub.on("event", (ev: NDKEvent) => {
         // console.log("event", ev);
         setEvents((evs) => {
           const newEvents = evs
             .concat([ev])
             .sort((a, b) => (b.created_at ?? 0) - (a.created_at ?? 0));
+
           return uniqBy(newEvents, (e: NDKEvent) => e.tagId());
         });
       });
+
       sub.on("eose", () => {
         setEose(true);
       });
@@ -51,7 +59,7 @@ export default function useEvents(
         sub.stop();
       };
     }
-  }, [id, opts?.disable]);
+  }, [id, opts?.disable, relays]);
 
   return { id, eose, events };
 }
