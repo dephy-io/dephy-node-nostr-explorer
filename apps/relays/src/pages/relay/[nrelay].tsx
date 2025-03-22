@@ -1,40 +1,108 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from 'next/router'
 import { useSearchParams } from 'next/navigation'
 import { Alert, AlertIcon } from "@chakra-ui/react";
-import { FormattedMessage } from "react-intl";
+import { useIntl, FormattedMessage } from "react-intl";
 
+import {
+  Stack,
+  Button,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  HStack,
+} from "@chakra-ui/react";
+
+import RelayIcon from "../../components/relay-icon";
 import Relay from "../../components/relay";
 
-export default function RelayPage() {
-  // const url = 'wss://relay-for-demo.dephy.dev'
-  const { query: { nrelay }} = useRouter()
-  const searchParams = useSearchParams()
- 
-  const kinds = searchParams.get('kinds')?.split(',').map(Number) ?? [1573]
+function normalizeRelayUrl(url: string): string {
+  const cleanUrl = url.replace(/^(wss?|https?|relay):\/\//, '').replace(/\/+$/, '');
+  
+  return `wss://${cleanUrl}`;
+}
 
-  const url = useMemo(() => {
+export default function RelayPage() {
+  const { formatMessage } = useIntl();
+  const { query: { nrelay }, push } = useRouter()
+  const searchParams = useSearchParams()
+  const [url, setUrl] = useState('');
+  const [relay, setRelay] = useState('');
+  const [kindString, setKindString] = useState('1573')
+  const [kinds, setKinds] = useState([1573])
+
+  const [showRelay, setShowRelay] = useState(true)
+
+  useEffect(() => {
     if (nrelay) {
-      return `wss://${decodeURIComponent(nrelay as string)}`;
+      setRelay(decodeURIComponent(nrelay as string));
+      setUrl(normalizeRelayUrl(decodeURIComponent(nrelay as string)));
     }
-  }, [nrelay]);
+  }, [nrelay])
+
+  useEffect(() => {
+    if (searchParams.has('kind')) {
+      setKindString(searchParams.get('kind') as string)
+      setKinds((searchParams.get('kind') as string).split(',').map(Number))
+    }
+  }, [searchParams])
+
+  function goToRelay() {
+    // setUrl(normalizeRelayUrl(decodeURIComponent(nrelay as string)));
+    // setShowRelay(true)
+    push(`/relay/${encodeURIComponent(relay)}?kind=${kindString}`);
+    setShowRelay(true);
+  }
 
   return (
     <>
-      {url ? (
-        <Relay url={url} kinds={kinds} />
-      ) : (
-        <Alert status="error">
-          <AlertIcon />
-          <FormattedMessage
-            id="no-url"
-            description="No URL error message"
-            defaultMessage="No URL provided"
+      <HStack spacing={4} w="100%">
+        <InputGroup flex="2">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
           />
-        </Alert>
-      )}
+          <Input
+            type="text"
+            placeholder={formatMessage({
+              id: "relay-url",
+              description: "Relay URL placeholder",
+              defaultMessage: "Relay URL",
+            })}
+            value={relay}
+            onChange={(ev) => {setRelay(ev.target.value); setShowRelay(false)}}
+          />
+        </InputGroup>
+        <InputGroup flex="1">
+          <InputLeftElement
+            pointerEvents="none"
+            children={<Icon as={RelayIcon} color="chakra-subtle-text" />}
+          />
+          <Input
+            value={kindString}
+            placeholder="Kinds"
+            onChange={(ev) => { setKindString(ev.target.value); setShowRelay(false) }}
+          />
+        </InputGroup>
+        <Button
+          h="1.75rem"
+          size="sm"
+          isDisabled={relay.trim().length === 0 && kinds.length === 0} 
+          onClick={() => goToRelay()}
+          variant="solid"
+          colorScheme="brand"
+        >
+          <FormattedMessage
+            id="go"
+            description="Go to relay button"
+            defaultMessage="Refresh"
+          />
+        </Button>
+      </HStack>
+      { showRelay ? <Relay url={url} kinds={kinds} /> : null }
     </>
   );
 }
