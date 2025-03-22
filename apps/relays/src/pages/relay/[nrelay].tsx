@@ -34,7 +34,7 @@ export default function RelayPage() {
   const [kindString, setKindString] = useState('1573')
   const [kinds, setKinds] = useState([1573])
 
-  const [showRelay, setShowRelay] = useState(true)
+  const [showRelay, setShowRelay] = useState(false)
 
   useEffect(() => {
     if (nrelay) {
@@ -50,9 +50,13 @@ export default function RelayPage() {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    if (url && kinds.length > 0) {
+      setShowRelay(true)
+    }
+  }, [url, kinds])
+
   function goToRelay() {
-    // setUrl(normalizeRelayUrl(decodeURIComponent(nrelay as string)));
-    // setShowRelay(true)
     push(`/relay/${encodeURIComponent(relay)}?kind=${kindString}`);
     setShowRelay(true);
   }
