@@ -23,9 +23,9 @@ function normalizeRelayUrl(url: string): string {
 
 export default function Relays() {
   const { formatMessage } = useIntl();
-  const [relay, setRelay] = useState("relay-for-demo.dephy.dev");
+  const [relay, setRelay] = useState('dev-relay.dephy.dev');
   const [kindString, setKindString] = useState('1573')
-  const [url, setUrl] = useState('wss://relay-for-demo.dephy.dev')
+  const [url, setUrl] = useState('wss://dev-relay.dephy.dev')
   const [kinds, setKinds] = useState([1573])
   const [showRelay, setShowRelay] = useState(true)
 
